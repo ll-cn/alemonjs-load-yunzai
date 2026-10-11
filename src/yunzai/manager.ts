@@ -602,27 +602,21 @@ class YunzaiManager {
       }
     });
 
-    // 阻塞等待 ready 信号（同时监听 exit 避免 Worker 崩溃后挂起 30s）
+    // 阻塞等待 ready 信号（同时监听 exit 避免 Worker 崩溃后挂起）
+    //
+    // 超时上限取 120s：插件多时 PluginsLoader.load() 可能远超 30s，
+    // 而超时后 Worker 并不会被杀，仍会继续加载并补发 ready
+    // （对应 handleMessage 的 'ready' 兜底分支）。
     await new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {
         cleanup();
-        reject(new Error('Worker 启动超时 (30s)'));
-      }, 30_000);
+        reject(new Error('Worker 启动超时 (120s)'));
+      }, 120_000);
 
       const handler = (msg: WorkerToParent) => {
         if (msg.type === 'ready') {
           cleanup();
-          this.ready = true;
-          this.restartCount = 0;
-          this.markStartOk();
-          logger.info(`[Yunzai] Worker 就绪，已加载 ${msg.pluginCount} 个插件`);
-          for (const readyHandler of this.readyHandlers) {
-            try {
-              readyHandler();
-            } catch (err: any) {
-              logger.warn(`[Yunzai] Worker 就绪回调失败: ${err?.message ?? String(err)}`);
-            }
-          }
+          this.markReady(msg.pluginCount);
           resolve();
         } else if (msg.type === 'error') {
           cleanup();
@@ -758,8 +752,37 @@ class YunzaiManager {
 
   // ─── 内部方法 ───
 
+  /**
+   * 登记 Worker 就绪（幂等）。
+   *
+   * 启动握手超时后 Worker 并不会被杀，仍会继续加载并补发 ready；
+   * 这里做兜底登记，否则 ready 会一直停在 false，
+   * bridge 会把所有消息直接 next() 跳过，Yunzai 一条消息都收不到。
+   */
+  private markReady(pluginCount: number): void {
+    if (this.ready) return;
+
+    this.ready = true;
+    this.restartCount = 0;
+    this.markStartOk();
+    logger.info(`[Yunzai] Worker 就绪，已加载 ${pluginCount} 个插件`);
+
+    for (const readyHandler of this.readyHandlers) {
+      try {
+        readyHandler();
+      } catch (err: any) {
+        logger.warn(`[Yunzai] Worker 就绪回调失败: ${err?.message ?? String(err)}`);
+      }
+    }
+  }
+
   private handleMessage(msg: WorkerToParent): void {
     switch (msg.type) {
+      case 'ready':
+        // 正常启动时该消息已由 start() 的临时 handler 消费；
+        // 这里是握手超时后才到达的 ready 的兜底登记
+        this.markReady(msg.pluginCount);
+        break;
       case 'plugin_fault':
         this.pluginFaults.add(msg.plugin);
         logger.error(`[Yunzai] 插件 ${msg.plugin} 异步任务失败，Worker 保持运行；该插件部分功能可能不可用:\n${msg.message}`);
@@ -790,7 +813,6 @@ class YunzaiManager {
         }
         break;
       }
-      // 'ready' 在 start() 的 Promise handler 中处理
     }
   }
 
