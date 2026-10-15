@@ -1901,7 +1901,7 @@ async function main(): Promise<void> {
     }
 
     // 5b. 获取 Bot 登录信息（更新 Bot.uin 为真实 QQ 号，atBot 检测依赖此值）
-    void (globalThis as any).Bot?.getLoginInfo?.()?.catch?.(() => {});
+    void (globalThis as any).Bot?.getLoginInfo?.()?.then?.(() => emitBotOnline())?.catch?.(() => {});
     // 预填充 Bot.fl / Bot.gl（定时任务和 relpyPrivate 依赖非空列表）
     void (globalThis as any).Bot?.getGroupList?.()?.catch?.(() => {});
     void (globalThis as any).Bot?.getFriendList?.()?.catch?.(() => {});
@@ -1913,12 +1913,22 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  let botOnlineEmitted = false;
+  const emitBotOnline = () => {
+    if (botOnlineEmitted) return;
+    botOnlineEmitted = true;
+    try {
+      (globalThis as any).Bot?.emit?.('online');
+    } catch {}
+  };
+
   // 6. 监听父进程 IPC 消息
   process.on('message', (msg: ParentToWorker) => {
     if (msg.type === 'event') {
       void runWithExecutionContext(
         { msgId: msg.id, platform: msg.data.platform ?? '', botId: String(msg.data.rawEvent?.self_id ?? msg.data.botId ?? '') },
         async () => {
+          emitBotOnline();
           // 统计收到的消息数
           if ((globalThis as any).Bot?.stat) {
             (globalThis as any).Bot.stat.recv_msg_cnt++;

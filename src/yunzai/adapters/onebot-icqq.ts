@@ -643,13 +643,21 @@ export function createOneBotRuntime(deps: {
       pickGroup: (gid: number) => createOneBotGroupAdapter(gid),
       pickUser: (uid: number) => createOneBotFriendAdapter(uid, ''),
       pickMember: (gid: number, uid: number) => createOneBotGroupAdapter(gid).pickMember(uid),
-      sendGroupMsg: async (gid: number, msg: any) => {
-        const contents = await serializeReply(msg);
+      sendGroupMsg: async (a: number, b: any, c?: any) => {
+        const gid = c === undefined ? a : b;
+        const contents = await serializeReply(c === undefined ? b : c);
 
         return callApi('sendGroupMsg', { group_id: gid, contents });
       },
-      sendPrivateMsg: async (uid: number, msg: any) => {
-        const contents = await serializeReply(msg);
+      sendPrivateMsg: async (a: number, b: any, c?: any) => {
+        const uid = c === undefined ? a : b;
+        const contents = await serializeReply(c === undefined ? b : c);
+
+        return callApi('sendPrivateMsg', { user_id: uid, contents });
+      },
+      sendFriendMsg: async (a: number, b: any, c?: any) => {
+        const uid = c === undefined ? a : b;
+        const contents = await serializeReply(c === undefined ? b : c);
 
         return callApi('sendPrivateMsg', { user_id: uid, contents });
       },
@@ -722,7 +730,7 @@ export function createOneBotRuntime(deps: {
           .then(normalizeForwardMessages)
           .catch(() => []),
       // 由 Worker 的父进程接管实际重启，避免插件自行退出后绕过生命周期管理。
-      restart: () => callApi('restartYunzai', {}, 5_000),
+      restart: () => callApi('restartYunzai', {}, 5_000).then((res: any) => (res && res.scheduled ? new Promise(() => {}) : res)),
       get cookies() {
         return webCredentials.cookies;
       },
