@@ -94,7 +94,7 @@
     "view": "lvy app.ts --jsxp"
   },
   "type": "module",
-  "version": "1.0.37",
+  "version": "1.0.38",
   "alemonjs": {
     "config": [
       {
