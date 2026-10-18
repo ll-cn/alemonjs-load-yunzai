@@ -15,6 +15,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createOneBotRuntime, isOneBotPlatform } from './adapters/onebot-icqq';
 import { installPluginFaultBoundary, protectPluginAcceptHandlers } from './plugin-faults';
+import { installPluginEventCompatibility } from './plugin-events';
 import { decodeCommandError, decodeCommandOutput, installWindowsCommandDecoding, repairWindowsCommandPath } from './command-output';
 import { createCompatValueWrapper } from './compat';
 import { getExecutionContext, getExecutionContextForAction, runWithExecutionContext } from './execution-context';
@@ -1852,6 +1853,7 @@ async function main(): Promise<void> {
     const mod = await import(pathToFileURL(path.join(cwd, 'lib', 'plugins', 'loader.js')).href);
 
     PluginsLoader = mod.default;
+    installPluginEventCompatibility(PluginsLoader);
     log('info', 'PluginsLoader 加载成功');
   } catch (err: any) {
     log('error', `PluginsLoader 加载失败: ${err.message}`);
@@ -1901,7 +1903,9 @@ async function main(): Promise<void> {
     }
 
     // 5b. 获取 Bot 登录信息（更新 Bot.uin 为真实 QQ 号，atBot 检测依赖此值）
-    void (globalThis as any).Bot?.getLoginInfo?.()?.then?.(() => emitBotOnline())?.catch?.(() => {});
+    void (globalThis as any).Bot?.getLoginInfo?.()
+      ?.then?.(() => emitBotOnline())
+      ?.catch?.(() => {});
     // 预填充 Bot.fl / Bot.gl（定时任务和 relpyPrivate 依赖非空列表）
     void (globalThis as any).Bot?.getGroupList?.()?.catch?.(() => {});
     void (globalThis as any).Bot?.getFriendList?.()?.catch?.(() => {});
@@ -1915,7 +1919,7 @@ async function main(): Promise<void> {
 
   let botOnlineEmitted = false;
   const emitBotOnline = () => {
-    if (botOnlineEmitted) return;
+    if (botOnlineEmitted) { return; }
     botOnlineEmitted = true;
     try {
       (globalThis as any).Bot?.emit?.('online');

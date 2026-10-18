@@ -327,12 +327,9 @@ async function sendDirectContents(contents: ReplyContent[], target: NativeForwar
     return native.result;
   }
 
-  const format = contentsToFormat(contents, event?.Platform);
-  const result = target.isPrivate ? await sendToUser(String(target.userId), format.value) : await sendToChannel(String(target.groupId), format.value);
-
-  assertMessageSendSucceeded(result);
-
-  return result;
+  return await sendGenericContents(contents, event?.Platform, format => {
+    return target.isPrivate ? sendToUser(String(target.userId), format.value) : sendToChannel(String(target.groupId), format.value);
+  });
 }
 
 async function sendReplyWithContext(reply: IPCReply, ctx: { message: ReturnType<typeof useMessage>[0] }, event?: EventsEnum): Promise<void> {
@@ -359,15 +356,14 @@ async function sendReplyWithContext(reply: IPCReply, ctx: { message: ReturnType<
       return;
     }
 
-    const format = contentsToFormat(reply.contents, event?.Platform);
+    const result = await sendGenericContents(reply.contents, event?.Platform, async format => {
+      if (event && isOneBotPlatform(event.Platform)) {
+        oneBotTrace(`generic format ${describeFormatContents(format.value)}`);
+      }
 
-    if (event && isOneBotPlatform(event.Platform)) {
-      oneBotTrace(`generic format ${describeFormatContents(format.value)}`);
-    }
+      return await ctx.message.send({ format });
+    });
 
-    const result = await ctx.message.send({ format });
-
-    assertMessageSendSucceeded(result);
     if (event && isOneBotPlatform(event.Platform)) {
       oneBotTrace(`generic result success ${getPlatformFailureSummary(result) ?? 'ok'}`);
     }
@@ -471,7 +467,8 @@ function normalizeButtonSpecs(value: any): ButtonSpec[][] {
   const source = Array.isArray(value) ? value : [value];
   const rows = source.length > 0 && source.every(item => Array.isArray(item)) ? source : [source];
 
-  return rows.map(row => row
+  return rows.map(row => {
+    return row
       .flatMap((item: any) => {
         if (item && typeof item === 'object' && Array.isArray(item.buttons)) {
           return item.buttons;
@@ -497,8 +494,8 @@ function normalizeButtonSpecs(value: any): ButtonSpec[][] {
         };
 
         return { title, data: typeof actionData === 'string' ? actionData : JSON.stringify(actionData), options };
-      })
-  );
+      });
+  });
 }
 
 function appendButtonToFormat(format: InstanceType<typeof Format>, value: any, platform?: string): void {
@@ -537,6 +534,11 @@ function appendContentsToFormat(format: InstanceType<typeof Format>, contents: R
   // 随即被平台以 40034011（无效 markdown content）拒绝。普通文本本身是合法
   // Markdown，因此在同一条回复包含按钮时改写为 MarkdownOriginal。
   const textAsMarkdown = platform === 'qq-bot' && contents.some(content => content.type === 'button');
+
+  // 拆出图片后可能只剩键盘，QQ 仍要求非空的 Markdown 正文。
+  if (textAsMarkdown && !contents.some(content => (content.type === 'text' || content.type === 'markdown') && content.data.trim())) {
+    format.addMarkdownOriginal('请选择操作');
+  }
 
   for (const c of contents) {
     switch (c.type) {
@@ -601,6 +603,47 @@ function contentsToFormat(contents: ReplyContent[], platform?: string): Instance
   appendContentsToFormat(format, contents, platform);
 
   return format;
+}
+
+/**
+ * QQ 富媒体分支会将 Markdown 和按钮降为文本。图片逐张发送后，再发送完整正文，
+ * 保留 Markdown 中的 URL 图片和键盘；其他平台仍使用原来的混合消息。
+ */
+async function sendGenericContents(
+  contents: ReplyContent[],
+  platform: string | undefined,
+  send: (format: InstanceType<typeof Format>) => Promise<any>
+): Promise<any> {
+  let batches = [contents];
+
+  if (platform === 'qq-bot') {
+    const flatten = (items: ReplyContent[]): ReplyContent[] => {
+      return items.flatMap(item => (item.type === 'forward' && item.fallback?.length ? flatten(item.fallback) : [item]));
+    };
+    const flattened = flatten(contents);
+    const images = flattened.filter(item => item.type === 'image');
+
+    if (images.length > 0) {
+      const body = flattened.filter(item => item.type !== 'image');
+
+      batches = images.map(image => [image]);
+      // 引用本身不会生成 Format 内容，避免拆分出一条空消息。
+      if (body.some(item => item.type !== 'quote')) {
+        batches.push(body);
+      }
+    }
+  }
+
+  let result: any;
+
+  for (const batch of batches) {
+    result = await send(contentsToFormat(batch, platform));
+    // 部分发送失败时回传失败，不重发已经成功的图片或降级按钮。
+    assertMessageSendSucceeded(result);
+  }
+
+  // 一次 reply 仍只有一份回执，返回最后一条发送结果。
+  return result;
 }
 
 // ━━━━━━━━━━━ 平台事件存储 & API 请求处理 ━━━━━━━━━━━
