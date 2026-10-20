@@ -484,6 +484,30 @@ function injectGlobals(): void {
       return Promise.all(masters.map((uid: any) => botInstance.sendPrivateMsg(Number(uid), msg)));
     },
 
+    download: async (url: string, file?: string, opts?: any) => {
+      const response = await fetch(url, opts && typeof opts === 'object' ? opts : undefined);
+      if (!response.ok) {
+        throw new Error(`下载失败 HTTP ${response.status}: ${url}`);
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      let target: string | undefined = file;
+
+      if (!target || (await botInstance.fsStat(target))?.isDirectory?.()) {
+        let name = decodeURIComponent(new URL(url).pathname.split('/').filter(Boolean).pop() ?? '') || `file_${Date.now()}`;
+        if (!path.extname(name)) {
+          const ext = response.headers.get('content-type')?.split(';')[0]?.split('/')[1];
+          if (ext) name += `.${ext}`;
+        }
+        target = target ? path.join(target, name) : name;
+      } else {
+        await botInstance.mkdir(path.dirname(target));
+      }
+
+      await fs.promises.writeFile(target, buffer);
+      return { url, file: target, buffer };
+    },
+
     /** TRSS/Yunzai 日志别名，统一转入 Worker 日志通道。 */
     makeLog: (level: string, ...args: any[]) => {
       const method = typeof botInstance.logger?.[level] === 'function' ? botInstance.logger[level] : botInstance.logger.info;
