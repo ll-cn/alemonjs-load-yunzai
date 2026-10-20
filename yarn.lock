@@ -2,27 +2,27 @@
 # yarn lockfile v1
 
 
-"@alemonjs/db@^0.0.20":
-  version "0.0.20"
-  resolved "https://registry.npmmirror.com/@alemonjs/db/-/db-0.0.20.tgz#ce322119d9da2f8d42ed5ea0edec791778b35722"
-  integrity sha512-WunDt4fr39Y22j+FVf6ZupduqUuA8O4URPjyRVq/rKh/jVVoY8J3enILv6eEzM6Ku7Lli7o2Ve+L/+URBFNtrQ==
+"@alemonjs/db@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.npmmirror.com/@alemonjs/db/-/db-0.0.21.tgz#f2f183486f470620833b0dd4ae6f19910571246f"
+  integrity sha512-2hlHS2c1+23We++9hNFuZvccSWtDwAePlX8ZdjjZZ77xwnLcMmpKG2/Q1LmZ1OAIUe/HFPRJBqjja10rrjEqvw==
   dependencies:
     dayjs "^1.11.13"
     ioredis "^5.4.1"
     sequelize "^6.33.0"
 
-"@alemonjs/onebot@^2.1.21":
-  version "2.1.21"
-  resolved "https://registry.npmmirror.com/@alemonjs/onebot/-/onebot-2.1.21.tgz#b31fda3c578bf2a7892f5eccf5b3aadba96e18ea"
-  integrity sha512-JdguFz2Fkk+lIOBXxOgiXlyncQ1AD+ro3sQxk43DEY0TV2/k9TdqYBkiLbSNNn7n5c8w9VO1Qu6Ym1LxPyWm3g==
+"@alemonjs/onebot@^2.1.23":
+  version "2.1.23"
+  resolved "https://registry.npmmirror.com/@alemonjs/onebot/-/onebot-2.1.23.tgz#d7adef8ceea627b36c587a842aa83ddb49817705"
+  integrity sha512-Cu/nF67IbP3lXQbEjMc/SWA1MYtOl8JRRefbVuBY6Iu6kHtxTXBQMnlt6ylq1oHS+Hm7zUHHphSatHnG4vm1wQ==
   dependencies:
     dayjs "^1.11.13"
     ws "^8.18.1"
 
-"@alemonjs/qq-bot@^2.1.33":
-  version "2.1.33"
-  resolved "https://registry.npmmirror.com/@alemonjs/qq-bot/-/qq-bot-2.1.33.tgz#8838ebe7a16a0445ab81b2adc4feb0ed0afe90fc"
-  integrity sha512-SRDbFK96cTeKu3qiAewMyQdthOss3QZGO4tX/N58bQVlP5P7T+zusZFUV3FXDVPS99IDqrRCLE2LVC22ElLarQ==
+"@alemonjs/qq-bot@^2.1.38":
+  version "2.1.38"
+  resolved "https://registry.npmmirror.com/@alemonjs/qq-bot/-/qq-bot-2.1.38.tgz#f3cd81e02694e3503ebd1aed55cf185f7b2fac4e"
+  integrity sha512-XDAvDi4x1zgf0Y5ayFeRWkFbfuRoZRsMZFPiOiXPESUtuqlmP3lF+0xmVBqkzZO/FXrOVeVXWbLSH2nvLpLJWA==
   dependencies:
     "@noble/curves" "^1.7.0"
     axios "^1.4.0"
@@ -38,6 +38,7 @@
     qrcode "^1.5.3"
     uuid "^14.0.1"
     ws "^8.13.0"
+    yaml "^2.5.1"
 
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
@@ -1227,10 +1228,10 @@ ajv@^6.14.0:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-alemonjs@^2.1.96:
-  version "2.1.96"
-  resolved "https://registry.npmmirror.com/alemonjs/-/alemonjs-2.1.96.tgz#91b44bb177d4bf5a6b95ecea21afbb782bc9373a"
-  integrity sha512-r+XCNRAViAplr/BqJQIodBCILwLg2PTbceR7+nCOrxD36r/ITzE0qohcxvrNTLYLFSQYtKZSok9P9V1lNL99cg==
+alemonjs@^2.1.112:
+  version "2.1.112"
+  resolved "https://registry.npmmirror.com/alemonjs/-/alemonjs-2.1.112.tgz#ce3ad4a1f448d901885735a7161adfe825a0cc08"
+  integrity sha512-0QIvwdtxDeTizb/SSvlsyvGtYMG0ntJBl18EQaWci3p7ZDmf+vAKE+TF7DuZ0R0BDSWH848cOJFw7kdJcvHL6Q==
   dependencies:
     "@koa/cors" "^5.0.0"
     axios "^1.14.0"
@@ -1242,7 +1243,7 @@ alemonjs@^2.1.96:
     https-proxy-agent "^9.0.0"
     koa "^3.0.1"
     koa-router "^14.0.0"
-    lodash "^4.18.1"
+    lodash-es "^4.18.1"
     log4js "^6.9.1"
     mime-types "^3.0.1"
     public-ip "^7.0.1"
@@ -2098,11 +2099,6 @@ csstype@^3.2.2:
   version "3.2.3"
   resolved "https://registry.npmmirror.com/csstype/-/csstype-3.2.3.tgz#ec48c0f3e993e50648c86da559e2610995cf989a"
   integrity sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==
-
-cuint@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.npmmirror.com/cuint/-/cuint-0.2.2.tgz#408086d409550c2631155619e9fa7bcadc3b991b"
-  integrity sha512-d4ZVpCW31eWwCMe1YT3ur7mUDnTXbgwyzaL320DrcRT45rfjYxkt5QWLrmOJ+/UEAI2+fQgKe/fCjR8l4TpRgw==
 
 culvert@^0.1.2:
   version "0.1.2"
@@ -3995,7 +3991,7 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
-lodash-es@^4.17.21:
+lodash-es@^4.17.21, lodash-es@^4.18.1:
   version "4.18.1"
   resolved "https://registry.npmmirror.com/lodash-es/-/lodash-es-4.18.1.tgz#b962eeb80d9d983a900bf342961fb7418ca10b1d"
   integrity sha512-J8xewKD/Gk22OZbhpOVSwcs60zhd95ESDwezOFuA3/099925PdHJ7OFHNTGtajL3AlZkykD32HykiMo+BIBI8A==
@@ -4005,7 +4001,7 @@ lodash.merge@^4.6.2:
   resolved "https://registry.npmmirror.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==
 
-lodash@^4.17.14, lodash@^4.17.21, lodash@^4.18.1:
+lodash@^4.17.14, lodash@^4.17.21:
   version "4.18.1"
   resolved "https://registry.npmmirror.com/lodash/-/lodash-4.18.1.tgz#ff2b66c1f6326d59513de2407bf881439812771c"
   integrity sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==
@@ -4061,38 +4057,31 @@ luxon@~3.7.0:
   resolved "https://registry.npmmirror.com/luxon/-/luxon-3.7.2.tgz#d697e48f478553cca187a0f8436aff468e3ba0ba"
   integrity sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==
 
-lvyjs-plugin-postcss@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmmirror.com/lvyjs-plugin-postcss/-/lvyjs-plugin-postcss-0.1.0.tgz#11cb98235118d476f1abb2932a3183a07e49e717"
-  integrity sha512-P4bi4KgjMxizK7+8G+lItMpOkJ6fpi3Qoe4qj6AiAWQ+XNYh0D8Oy3pKm+tDR3KUV0k9sjSI4tkCzAeLgoUzWA==
+lvyjs-plugin-postcss@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmmirror.com/lvyjs-plugin-postcss/-/lvyjs-plugin-postcss-0.2.0.tgz#4233c8ba5643021dc5266dcf7ff2e46dd11063fc"
+  integrity sha512-Qk7WjqCJjZZ10GglFvhfnLYcYQvQKLC8glF2HuZZv50YAKoYJFxWmPIh1qJQaetXw5AF7wLS0mvYJ0hL7TBZZA==
   dependencies:
     autoprefixer "^10.4.20"
-    chokidar "^5.0.0"
-    picomatch "^4.0.3"
     postcss "^8.4.47"
     postcss-import "^16.1.0"
     postcss-load-config "^6.0.1"
-    postcss-url "^10.1.3"
     tsx "^4.23.12"
 
-lvyjs@0.3.1:
-  version "0.3.1"
-  resolved "https://registry.npmmirror.com/lvyjs/-/lvyjs-0.3.1.tgz#d1d9dd50f07f7cf3383b91de1c24520db14f748c"
-  integrity sha512-HE+x5ytmY/0/80pflhM1XanNU49MxCvGL3qDcLyHOZRQJWMwh/v++P7b4gN1p6dIknZ1ty9WLo4BETRT+WHR6A==
+lvyjs@0.4.0:
+  version "0.4.0"
+  resolved "https://registry.npmmirror.com/lvyjs/-/lvyjs-0.4.0.tgz#4259491a31faad3d135e8a81dc01260a3e7b6231"
+  integrity sha512-ujkrTj353R8rcUifhAnqMgInPN/IYRwqNGHU4VmJUFjROt4TTaNCsw7isPiV/HrQezte5/2kCkEqx8SFhrP9/g==
   dependencies:
     "@jridgewell/remapping" "^2.3.5"
     chokidar "^5.0.0"
     esbuild "~0.28.0"
+    picomatch "^4.0.3"
+    postcss "^8.4.47"
+    postcss-value-parser "^4.2.0"
     tsdown "^0.22.14"
     tsx "^4.23.12"
     typescript "^7.0.2"
-
-make-dir@~3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmmirror.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
-  integrity sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==
-  dependencies:
-    semver "^6.0.0"
 
 markdown-to-jsx@^9.7.13:
   version "9.10.2"
@@ -4174,11 +4163,6 @@ mime-types@^3.0.0, mime-types@^3.0.1:
   integrity sha512-Lbgzdk0h4juoQ9fCKXW4by0UJqj+nOOrI9MJ1sSj4nI8aI2eo1qmvQEie4VD1glsS250n15LsWsYtCugiStS5A==
   dependencies:
     mime-db "^1.54.0"
-
-mime@~2.5.2:
-  version "2.5.2"
-  resolved "https://registry.npmmirror.com/mime/-/mime-2.5.2.tgz#6e3dc6cc2b9510643830e5f19d5cb753da5eeabe"
-  integrity sha512-tqkh47FzKeCPD2PUiPB6pkbMzsCasjxAfC62/Wap5qrUWcb+sFasXUC5I3gYM5iBM8v/Qpn4UK0x+j0iHyFPDg==
 
 mimic-function@^5.0.0:
   version "5.0.1"
@@ -4993,16 +4977,6 @@ postcss-unique-selectors@^8.0.4:
   dependencies:
     postcss-selector-parser "^7.1.5"
 
-postcss-url@^10.1.3:
-  version "10.1.4"
-  resolved "https://registry.npmmirror.com/postcss-url/-/postcss-url-10.1.4.tgz#bfcc82bc4994b218617e13a5f1d935cbcbe32a5d"
-  integrity sha512-/oBzyLOHQvXvVr/7bzZOFD5lYTy1nomVE4aMA9eY5KQsHfWLDIzb86q8XoUsmrj2xKoGYMAvd884EzJEQzuXIw==
-  dependencies:
-    make-dir "~3.1.0"
-    mime "~2.5.2"
-    minimatch "^3.1.5"
-    xxhashjs "~0.2.2"
-
 postcss-value-parser@^4.0.0, postcss-value-parser@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmmirror.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
@@ -5492,7 +5466,7 @@ scheduler@^0.27.0:
   resolved "https://registry.npmmirror.com/scheduler/-/scheduler-0.27.0.tgz#0c4ef82d67d1e5c1e359e8fc76d3a87f045fe5bd"
   integrity sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==
 
-semver@^6.0.0, semver@^6.3.1:
+semver@^6.3.1:
   version "6.3.1"
   resolved "https://registry.npmmirror.com/semver/-/semver-6.3.1.tgz#556d2ef8689146e46dcea4bfdd095f3434dffcb4"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
@@ -6529,13 +6503,6 @@ ws@~7.5.10:
   version "7.5.13"
   resolved "https://registry.npmmirror.com/ws/-/ws-7.5.13.tgz#12aa507eaca76c295c278b1aebf4698ab2c1845f"
   integrity sha512-rsKI6xDBFVf4r/x8XyChGK04QR/XHroxs/jUcoWvtEZM8TPU/X/uIY9B1CsSzYws9ZJb/6bbBu7dPhFW00CAoA==
-
-xxhashjs@~0.2.2:
-  version "0.2.2"
-  resolved "https://registry.npmmirror.com/xxhashjs/-/xxhashjs-0.2.2.tgz#8a6251567621a1c46a5ae204da0249c7f8caa9d8"
-  integrity sha512-AkTuIuVTET12tpsVIQo+ZU6f/qDmKuRUcjaqR+OIvm+aCBsZ95i7UVY5WJ9TMsSaZ0DA2WxoZ4acu0sPH+OKAw==
-  dependencies:
-    cuint "^0.2.2"
 
 y18n@^4.0.0:
   version "4.0.3"
