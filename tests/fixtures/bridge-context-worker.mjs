@@ -24,7 +24,7 @@ mock.module('alemonjs', {
     },
     sendToChannel: noop, sendToUser: noop, useMessage: () => [{}], useGuild: noop, useMe: noop,
     useMember: () => [{ info: async params => { memberQueries.push(params); return [{ code: 2000, data: { user_id: 10001, nickname: 'member' } }]; } }],
-    useRequest: noop, useUser: noop,
+    useRequest: noop, useUser: noop, useMedia: () => [{ list: async () => ({ code: 4000 }) }], MessageDirect: {}, getConfigValue: () => ({}),
     useClient: event => [{ send: async request => {
       native.push({ request, botId: event.BotId });
       if (request.action === 'send_group_forward_msg') {

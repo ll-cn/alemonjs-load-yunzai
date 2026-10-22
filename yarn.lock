@@ -19,10 +19,10 @@
     dayjs "^1.11.13"
     ws "^8.18.1"
 
-"@alemonjs/qq-bot@^2.1.38":
-  version "2.1.38"
-  resolved "https://registry.npmmirror.com/@alemonjs/qq-bot/-/qq-bot-2.1.38.tgz#f3cd81e02694e3503ebd1aed55cf185f7b2fac4e"
-  integrity sha512-XDAvDi4x1zgf0Y5ayFeRWkFbfuRoZRsMZFPiOiXPESUtuqlmP3lF+0xmVBqkzZO/FXrOVeVXWbLSH2nvLpLJWA==
+"@alemonjs/qq-bot@^2.1.39":
+  version "2.1.39"
+  resolved "https://registry.npmmirror.com/@alemonjs/qq-bot/-/qq-bot-2.1.39.tgz#ef8f242a1abbabb738cf49db42444b8ed596667d"
+  integrity sha512-46ZDhL57l2aRs8fnEhLvFMmZfufGpkNnkmaLzyfwqLVgTy7WbnsMsFSQ3yeU4JyLRKVt6kr2Oi3/x7FRi1p4ug==
   dependencies:
     "@noble/curves" "^1.7.0"
     axios "^1.4.0"
@@ -1228,10 +1228,10 @@ ajv@^6.14.0:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-alemonjs@^2.1.112:
-  version "2.1.112"
-  resolved "https://registry.npmmirror.com/alemonjs/-/alemonjs-2.1.112.tgz#ce3ad4a1f448d901885735a7161adfe825a0cc08"
-  integrity sha512-0QIvwdtxDeTizb/SSvlsyvGtYMG0ntJBl18EQaWci3p7ZDmf+vAKE+TF7DuZ0R0BDSWH848cOJFw7kdJcvHL6Q==
+alemonjs@^2.1.113:
+  version "2.1.113"
+  resolved "https://registry.npmmirror.com/alemonjs/-/alemonjs-2.1.113.tgz#109c433eeedfb13a7499fc0aa0242a1b56e6cc69"
+  integrity sha512-ehXqTF7ZXflNJJIMS99VLvfEc3XMC43A5FqeEOpiwUH9zl4iJPN7dGbUU08rEztoyylwv3xGNe2HyeAPqpVRsg==
   dependencies:
     "@koa/cors" "^5.0.0"
     axios "^1.14.0"

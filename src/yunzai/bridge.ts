@@ -7,8 +7,28 @@
  * 4. 异步接收 Worker 回复（支持多次 reply），通过 AlemonJS Format 发送
  * 5. 接收 Worker API 请求，调用 AlemonJS 平台 API 实现双向通信
  */
-import { EventsEnum, Format, logger, Next, sendToChannel, sendToUser, useClient, useGuild, useMe, useMember, useMessage, useRequest, useUser } from 'alemonjs';
+import {
+  EventsEnum,
+  Format,
+  getConfigValue,
+  logger,
+  MessageDirect,
+  Next,
+  ResultCode,
+  useMedia,
+  sendToChannel,
+  sendToUser,
+  useClient,
+  useGuild,
+  useMe,
+  useMember,
+  useMessage,
+  useRequest,
+  useUser
+} from 'alemonjs';
+import { join } from 'node:path';
 import { getYunzaiEventConcurrency } from '../path';
+import { materialErrorCode, QQMaterialCache } from './qq-material-cache';
 import { WorkerEventQueue } from './event-queue';
 import { createOneBotClientCompat, normalizeWorkerApiResult, toOneBotApiResponse } from './api-result';
 import type { NativeForwardTarget } from './forward';
@@ -327,7 +347,18 @@ async function sendDirectContents(contents: ReplyContent[], target: NativeForwar
     return native.result;
   }
 
-  return await sendGenericContents(contents, event?.Platform, format => {
+  return await sendGenericContents(contents, event, format => {
+    if (event?.Platform === 'qq-bot' && event.BotId) {
+      return MessageDirect.create().sendToTarget({
+        target: {
+          scope: target.isPrivate ? 'c2c' : 'group',
+          targetId: String(target.isPrivate ? target.userId : target.groupId),
+          BotId: event.BotId
+        },
+        format
+      });
+    }
+
     return target.isPrivate ? sendToUser(String(target.userId), format.value) : sendToChannel(String(target.groupId), format.value);
   });
 }
@@ -356,7 +387,7 @@ async function sendReplyWithContext(reply: IPCReply, ctx: { message: ReturnType<
       return;
     }
 
-    const result = await sendGenericContents(reply.contents, event?.Platform, async format => {
+    const result = await sendGenericContents(reply.contents, event, async format => {
       if (event && isOneBotPlatform(event.Platform)) {
         oneBotTrace(`generic format ${describeFormatContents(format.value)}`);
       }
@@ -605,11 +636,83 @@ function contentsToFormat(contents: ReplyContent[], platform?: string): Instance
   return format;
 }
 
+const qqMaterials = new QQMaterialCache(join(process.cwd(), 'data', 'load-yunzai', 'qq-materials'), message => logger.warn(`[bridge] ${message}`));
+
+async function sendGenericContents(
+  contents: ReplyContent[],
+  event: EventsEnum | undefined,
+  send: (format: InstanceType<typeof Format>) => Promise<any>
+): Promise<any> {
+  if (event?.Platform !== 'qq-bot' || !event.BotId) {
+    return await sendLegacyContents(contents, event?.Platform, send);
+  }
+  const flatten = (items: ReplyContent[]): ReplyContent[] => {
+    return items.flatMap(item => (item.type === 'forward' && item.fallback?.length ? flatten(item.fallback) : [item]));
+  };
+  const flat = flatten(contents);
+  const images = flat.filter(item => item.type === 'image');
+
+  // Audio/video still require the rich-media path; mixing them into Markdown loses semantics.
+  if (!images.length || flat.some(item => item.type === 'record' || item.type === 'video')) {
+    return await sendLegacyContents(contents, event.Platform, send);
+  }
+  const config = getConfigValue() ?? {};
+  const qqConfig = { ...config['qq-bot'], ...config['@alemonjs/qq-bot'] };
+
+  if (qqConfig.markdownToText === true) {
+    return await sendLegacyContents(contents, event.Platform, send);
+  }
+  const [media] = useMedia(event);
+
+  return await qqMaterials.run(
+    event.BotId,
+    async session => {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        let prepared: Awaited<ReturnType<typeof session.prepare>>;
+
+        try {
+          prepared = await session.prepare(images.map(image => image.data));
+        } catch (error) {
+          logger.warn(`[bridge] QQ Markdown 素材准备失败，改用独立图片发送 (code=${materialErrorCode(error) ?? 'unavailable'})`);
+
+          return await sendLegacyContents(contents, event.Platform, send);
+        }
+        let index = 0;
+        const converted: ReplyContent[] = flat.map(item => {
+          if (item.type === 'image') {
+            return { type: 'markdown', data: `![图片](${prepared.references[index++]})` };
+          }
+          if (item.type === 'text') {
+            return { ...item, type: 'markdown' };
+          }
+
+          return item;
+        });
+        const result = await send(contentsToFormat(converted, event.Platform));
+        const code = materialErrorCode(result);
+
+        if (attempt === 0 && code !== undefined && [40035008, 40035009, 40035010].includes(code)) {
+          await session.invalidate(prepared.entries);
+          continue;
+        }
+        assertMessageSendSucceeded(result);
+        if (!(Array.isArray(result) ? result : [result]).some(item => item?.code === ResultCode.Ok)) {
+          throw new Error('QQ Markdown message did not return a success receipt');
+        }
+        await session.success(prepared.entries);
+
+        return result;
+      }
+    },
+    media
+  );
+}
+
 /**
  * QQ 富媒体分支会将 Markdown 和按钮降为文本。图片逐张发送后，再发送完整正文，
  * 保留 Markdown 中的 URL 图片和键盘；其他平台仍使用原来的混合消息。
  */
-async function sendGenericContents(
+async function sendLegacyContents(
   contents: ReplyContent[],
   platform: string | undefined,
   send: (format: InstanceType<typeof Format>) => Promise<any>

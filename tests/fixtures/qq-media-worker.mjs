@@ -30,7 +30,7 @@ mock.module('alemonjs', {
     useMessage: () => [{ send: ({ format }) => send('reply', format.value) }],
     sendToChannel: (id, value) => send(`channel:${id}`, value),
     sendToUser: (id, value) => send(`user:${id}`, value),
-    useClient: noop, useGuild: noop, useMe: noop, useMember: noop, useRequest: noop, useUser: noop
+    useClient: noop, useGuild: noop, useMe: noop, useMember: noop, useRequest: noop, useUser: noop, useMedia: () => [{ list: async () => ({ code: 4000 }) }], MessageDirect: { create: () => ({ sendToTarget: ({ target, format }) => send(`${target.scope === 'c2c' ? 'user' : 'channel'}:${target.targetId}`, format.value) }) }, getConfigValue: () => ({})
   }
 });
 mock.module('@alemonjs/onebot', { namedExports: { API: {} } });
