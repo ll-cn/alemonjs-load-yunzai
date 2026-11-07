@@ -83,6 +83,10 @@ try {
   assert.equal(uploads, 1, 'identical image bypasses upload');
   assert.equal(calls.length, 1);
   assert.deepEqual(calls[0].format.map(item => item.type), ['MarkdownOriginal', 'BT.group']);
+  const callbackMsg = { type: 'button', data: '', buttonData: [[{ text: '卡片', callback: '#卡片' }, { text: '主页', link: 'https://example.com' }]] };
+  assert.equal((await request({ contents: [text, callbackMsg] })).ok, true);
+  const callbackGroup = calls[0].format.find(item => item.type === 'BT.group');
+  assert.deepEqual(callbackGroup.value[0].value.map(button => [button.options.data, button.options.type]), [['#卡片', 'call'], ['https://example.com', 'link']]);
   await request({ contents: [{ type: 'forward', data: '', fallback: [image, md, button] }] });
   assert.equal(calls.length, 1);
 
